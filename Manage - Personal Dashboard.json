@@ -9,24 +9,24 @@
       "pluginName": "Microsoft SQL Server"
     },
     {
-      "name": "VAR_CW_API_URL",
+      "name": "VAR_CW_DB_NAME",
       "type": "constant",
-      "label": "i.e. https://api-au.myconnectwise.net/v4_6_release",
-      "value": "https://api-au.myconnectwise.net/v4_6_release",
+      "label": "Database Name i.e. cwwebapp_yourmsp",
+      "value": "cwwebapp_yourmsp",
       "description": ""
     },
     {
       "name": "VAR_CW_COMPANY_ID",
       "type": "constant",
       "label": "Your MSP's company ID as it is in ConnectWise Manage",
-      "value": "YourMSP",
+      "value": "yourmsp",
       "description": ""
     },
     {
-      "name": "VAR_CW_DB_NAME",
+      "name": "VAR_CW_API_URL",
       "type": "constant",
-      "label": "Database Name i.e. cwwebapp_yourmsp",
-      "value": "cwwebapp_yourmsp",
+      "label": "i.e. https://api-au.myconnectwise.net/v4_6_release",
+      "value": "https://api-au.myconnectwise.net/v4_6_release",
       "description": ""
     }
   ],
@@ -42,6 +42,12 @@
       "id": "grafana",
       "name": "Grafana",
       "version": "7.0.0"
+    },
+    {
+      "type": "panel",
+      "id": "graph",
+      "name": "Graph",
+      "version": ""
     },
     {
       "type": "datasource",
@@ -79,7 +85,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1607837596754,
+  "iteration": 1609382327670,
   "links": [],
   "panels": [
     {
@@ -99,8 +105,12 @@
                 "value": null
               },
               {
+                "color": "orange",
+                "value": 100
+              },
+              {
                 "color": "red",
-                "value": 80
+                "value": 200
               }
             ]
           }
@@ -156,13 +166,13 @@
         {
           "alias": "",
           "format": "table",
-          "rawSql": "SELECT count(*)\n  FROM [$cw_db_name].[dbo].[v_api_collection_service_ticket]\n  WHERE [Closed_Flag] = 0\n  AND [Board_Name] LIKE 'Support'\n  AND [parentTicketId] IS NULL\n",
+          "rawSql": "SELECT count(*)\n  FROM [$cw_db_name].[dbo].[v_api_collection_service_ticket]\n  WHERE [Closed_Flag] = 0\n  AND [Board_Name] LIKE 'Support'\n  AND [parentTicketId] IS NULL\n  AND [ResourceList] LIKE '%$cw_user%'\n",
           "refId": "A"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Test Open Support Tickets",
+      "title": "Open Support Tickets",
       "transformations": [
         {
           "id": "organize",
@@ -221,18 +231,13 @@
     },
     {
       "datasource": "${DS_CONNECTWISE_MANAGE}",
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {
             "align": null
           },
-          "links": [
-            {
-              "targetBlank": true,
-              "title": "Open Ticket",
-              "url": "${cw_api_url}/services/system_io/router/openrecord.rails?locale=${cw_locale}&companyName=${cw_company_id}&recordType=ServiceFV&recid=${__data.fields[SR_Service_RecID]}"
-            }
-          ],
+          "links": [],
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
@@ -258,7 +263,7 @@
                 "value": 4
               },
               {
-                "color": "#EF843C",
+                "color": "dark-blue",
                 "value": 5
               }
             ]
@@ -273,7 +278,7 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 609
+                "value": 578
               }
             ]
           },
@@ -298,6 +303,16 @@
               {
                 "id": "custom.width",
                 "value": 82
+              },
+              {
+                "id": "links",
+                "value": [
+                  {
+                    "targetBlank": true,
+                    "title": "Open Ticket",
+                    "url": "${cw_api_url}/services/system_io/router/openrecord.rails?locale=${cw_locale}&companyName=${cw_company_id}&recordType=ServiceFV&recid=${__data.fields[SR_Service_RecID]}"
+                  }
+                ]
               }
             ]
           },
@@ -372,7 +387,7 @@
               },
               {
                 "id": "custom.width",
-                "value": 205
+                "value": 220
               },
               {
                 "id": "custom.align",
@@ -388,14 +403,66 @@
             "properties": [
               {
                 "id": "custom.width",
-                "value": 219
+                "value": 196
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Client"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 314
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Age"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 58
+              },
+              {
+                "id": "custom.displayMode",
+                "value": "color-text"
+              },
+              {
+                "id": "thresholds",
+                "value": {
+                  "mode": "absolute",
+                  "steps": [
+                    {
+                      "color": "green",
+                      "value": null
+                    },
+                    {
+                      "color": "#EAB839",
+                      "value": 7
+                    },
+                    {
+                      "color": "red",
+                      "value": 30
+                    }
+                  ]
+                }
+              },
+              {
+                "id": "custom.align",
+                "value": "left"
               }
             ]
           }
         ]
       },
       "gridPos": {
-        "h": 15,
+        "h": 16,
         "w": 19,
         "x": 5,
         "y": 0
@@ -409,13 +476,13 @@
         {
           "alias": "",
           "format": "table",
-          "rawSql": "SELECT\n\t\t[SR_Service_RecID]\n      ,[Summary]\n      ,[Board_Name]\n      ,[Status_Name]\n      ,[Company_ID]\n      ,[Closed_Flag]\n      ,[SR_Type_Name]\n      ,[SR_SubType_Name]\n      ,[SR_SubTypeItem_Name]\n      ,[SR_Urgency_Name]\n      ,[Hours_Actual]\n      ,[Date_Resolved_UTC]\n      ,[Date_Resplan_UTC]\n      ,[Date_Responded_UTC]\n      ,[Resolved_Minutes]\n      ,[Resplan_Minutes]\n      ,[Responded_Minutes]\n      ,[IsInSla]\n      ,[Last_Update_UTC]\n      ,[ResourceList]\n      ,[Company_Name]\n      ,[Closed_By]\n      ,[SLA_Name]\n      ,[parentTicketId]\n      ,SUBSTRING([SR_Urgency_Name], 10,1) AS 'Urgency'\n  FROM [$cw_db_name].[dbo].[v_api_collection_service_ticket]\n  WHERE [Closed_Flag] = 0\n  AND [Board_Name] LIKE 'Support'\n  AND [parentTicketId] IS NULL\n  AND ResourceList IS NULL\n  ORDER BY SR_Urgency_Name, SR_Service_RecID DESC\n",
+          "rawSql": "SELECT\n\t\t[SR_Service_RecID]\n      ,[Summary]\n      ,[Board_Name]\n      ,[Status_Name]\n      ,[Company_ID]\n      ,[Closed_Flag]\n      ,[SR_Type_Name]\n      ,[SR_SubType_Name]\n      ,[SR_SubTypeItem_Name]\n      ,[SR_Urgency_Name]\n      ,[Hours_Actual]\n      ,CAST(DATEDIFF(hh, [Date_Entered_UTC], GETUTCDATE())/24.0 as DECIMAL(10, 1)) as 'Age'\n      ,[Date_Resolved_UTC]\n      ,[Date_Resplan_UTC]\n      ,[Date_Responded_UTC]\n      ,[Resolved_Minutes]\n      ,[Resplan_Minutes]\n      ,[Responded_Minutes]\n      ,[IsInSla]\n      ,[Last_Update_UTC]\n      ,[ResourceList]\n      ,[Company_Name]\n      ,[Closed_By]\n      ,[SLA_Name]\n      ,[parentTicketId]\n      ,SUBSTRING([SR_Urgency_Name], 10,1) AS 'Urgency'\n  FROM [$cw_db_name].[dbo].[v_api_collection_service_ticket]\n  WHERE [Closed_Flag] = 0\n  AND [parentTicketId] IS NULL\n  AND [ResourceList] LIKE '%$cw_user%'\n  AND [Board_Name] NOT LIKE 'Documentation'\n  ORDER BY SR_Urgency_Name, Age DESC\n",
           "refId": "A"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Unassigned Tickets (TODO - Age)",
+      "title": "Open Tickets",
       "transformations": [
         {
           "id": "organize",
@@ -442,6 +509,152 @@
               "SR_Type_Name": true,
               "SR_Urgency_Name": true,
               "parentTicketId": true
+            },
+            "indexByName": {
+              "Age": 24,
+              "Board_Name": 3,
+              "Closed_By": 22,
+              "Closed_Flag": 6,
+              "Company_ID": 5,
+              "Company_Name": 2,
+              "Date_Resolved_UTC": 12,
+              "Date_Resplan_UTC": 13,
+              "Date_Responded_UTC": 14,
+              "Hours_Actual": 11,
+              "IsInSla": 18,
+              "Last_Update_UTC": 19,
+              "Resolved_Minutes": 15,
+              "ResourceList": 20,
+              "Resplan_Minutes": 16,
+              "Responded_Minutes": 17,
+              "SLA_Name": 21,
+              "SR_Service_RecID": 0,
+              "SR_SubTypeItem_Name": 9,
+              "SR_SubType_Name": 8,
+              "SR_Type_Name": 7,
+              "SR_Urgency_Name": 10,
+              "Status_Name": 4,
+              "Summary": 1,
+              "Urgency": 25,
+              "parentTicketId": 23
+            },
+            "renameByName": {
+              "Board_Name": "Board",
+              "Company_ID": "",
+              "Company_Name": "Client",
+              "SR_Service_RecID": "Ticket #",
+              "SR_Type_Name": "",
+              "Status_Name": "Status",
+              "Summary": ""
+            }
+          }
+        }
+      ],
+      "type": "table"
+    },
+    {
+      "datasource": "${DS_CONNECTWISE_MANAGE}",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null
+          },
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "green",
+                "value": null
+              },
+              {
+                "color": "orange",
+                "value": 100
+              },
+              {
+                "color": "red",
+                "value": 200
+              }
+            ]
+          }
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Summary"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 520
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Company_Name"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 185
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 8,
+        "w": 5,
+        "x": 0,
+        "y": 8
+      },
+      "id": 7,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "auto",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "values": false
+        }
+      },
+      "pluginVersion": "7.0.0",
+      "targets": [
+        {
+          "alias": "",
+          "format": "table",
+          "rawSql": "SELECT count(*)\n  FROM [$cw_db_name].[dbo].[v_api_collection_service_ticket]\n  WHERE [Closed_Flag] = 0\n  AND [Board_Name] LIKE 'Alerts'\n  AND [parentTicketId] IS NULL\n  AND [ResourceList] LIKE '%$cw_user%'\n",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Open Alert Tickets",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Closed_Flag": true,
+              "Company_ID": true,
+              "Date_Resolved_UTC": true,
+              "Date_Resplan_UTC": true,
+              "Date_Responded_UTC": true,
+              "Hours_Actual": true,
+              "Resolved_Minutes": true,
+              "Resplan_Minutes": true,
+              "Responded_Minutes": true,
+              "SR_Service_RecID": false,
+              "SR_SubTypeItem_Name": true,
+              "SR_SubType_Name": true,
+              "SR_Type_Name": false
             },
             "indexByName": {
               "Board_Name": 3,
@@ -478,10 +691,16 @@
           }
         }
       ],
-      "type": "table"
+      "type": "stat"
     },
     {
+      "aliasColors": {},
+      "bars": false,
+      "dashLength": 10,
+      "dashes": false,
       "datasource": "${DS_CONNECTWISE_MANAGE}",
+      "decimals": 0,
+      "description": "",
       "fieldConfig": {
         "defaults": {
           "custom": {
@@ -494,12 +713,8 @@
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "blue",
                 "value": null
-              },
-              {
-                "color": "red",
-                "value": 80
               }
             ]
           }
@@ -531,28 +746,78 @@
           }
         ]
       },
+      "fill": 1,
+      "fillGradient": 3,
       "gridPos": {
-        "h": 7,
-        "w": 5,
+        "h": 9,
+        "w": 24,
         "x": 0,
-        "y": 8
+        "y": 16
       },
-      "id": 5,
+      "hiddenSeries": false,
+      "id": 13,
+      "legend": {
+        "alignAsTable": true,
+        "avg": true,
+        "current": true,
+        "max": false,
+        "min": false,
+        "rightSide": false,
+        "show": true,
+        "total": true,
+        "values": true
+      },
+      "lines": true,
+      "linewidth": 2,
+      "nullPointMode": "null as zero",
       "options": {
-        "showHeader": true
+        "dataLinks": []
       },
+      "percentage": false,
       "pluginVersion": "7.0.0",
+      "pointradius": 3,
+      "points": true,
+      "renderer": "flot",
+      "seriesOverrides": [
+        {
+          "$$hashKey": "object:1042",
+          "alias": "Opened Tickets",
+          "color": "#5794F2"
+        },
+        {
+          "$$hashKey": "object:1052",
+          "alias": "Closed Tickets",
+          "color": "#73BF69"
+        }
+      ],
+      "spaceLength": 10,
+      "stack": false,
+      "steppedLine": false,
       "targets": [
         {
           "alias": "",
-          "format": "table",
-          "rawSql": "SELECT\n      [Closed_By], \n      COUNT(*) as 'Closed last 24 hrs'\n  FROM [$cw_db_name].[dbo].[v_api_collection_service_ticket]\n  WHERE [Closed_Flag] = 1\n  AND [Board_Name] LIKE 'Support'\n  AND [parentTicketId] IS NULL\n  AND [Date_Closed_UTC] > GETUTCDATE() -1\n  AND [Hours_Actual] > 0\n  GROUP BY [Closed_By]\n  ORDER BY 'Closed last 24 hrs' DESC",
+          "format": "time_series",
+          "rawSql": "SELECT $__timeGroup([Date_Entered_UTC], '1d',0) as time, ISNULL(count([SR_Service_RecID]), 0) as 'Opened Tickets'\n  FROM [$cw_db_name].[dbo].[v_api_collection_service_ticket]\n  WHERE ([Board_Name] LIKE 'Support' OR [Board_Name] LIKE 'Triage')\n  AND [parentTicketId] IS NULL\n  AND [Entered_By] LIKE '$cw_user'\n  AND [Date_Entered_UTC] > GETUTCDATE() - 30\n  GROUP BY $__timeGroup([Date_Entered_UTC], '1d',0)\n  ORDER BY $__timeGroup([Date_Entered_UTC], '1d',0)",
           "refId": "A"
+        },
+        {
+          "alias": "",
+          "format": "time_series",
+          "hide": false,
+          "rawSql": "SELECT $__timeGroup([Date_Closed_UTC], '1d',0) as time, ISNULL(count([SR_Service_RecID]), 0) as 'Closed Tickets'\n  FROM [$cw_db_name].[dbo].[v_api_collection_service_ticket]\n  WHERE ([Board_Name] LIKE 'Support' OR [Board_Name] LIKE 'Triage')\n  AND [parentTicketId] IS NULL\n  AND [Closed_By] LIKE '$cw_user'\n  AND [Date_Closed_UTC] > GETUTCDATE() - 30\n  GROUP BY $__timeGroup([Date_Closed_UTC], '1d',0)\n  ORDER BY $__timeGroup([Date_Closed_UTC], '1d',0)",
+          "refId": "B"
         }
       ],
+      "thresholds": [],
       "timeFrom": null,
+      "timeRegions": [],
       "timeShift": null,
-      "title": "Closed Tickets in the Last 24 hrs (Time > 0)",
+      "title": "Tickets Opened vs Closed (Last 30 Days)",
+      "tooltip": {
+        "shared": true,
+        "sort": 0,
+        "value_type": "individual"
+      },
       "transformations": [
         {
           "id": "organize",
@@ -612,7 +877,39 @@
           }
         }
       ],
-      "type": "table"
+      "type": "graph",
+      "xaxis": {
+        "buckets": null,
+        "mode": "time",
+        "name": null,
+        "show": true,
+        "values": []
+      },
+      "yaxes": [
+        {
+          "$$hashKey": "object:742",
+          "decimals": null,
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": true
+        },
+        {
+          "$$hashKey": "object:743",
+          "format": "short",
+          "label": "",
+          "logBase": 1,
+          "max": null,
+          "min": null,
+          "show": false
+        }
+      ],
+      "yaxis": {
+        "align": false,
+        "alignLevel": null
+      }
     },
     {
       "datasource": "${DS_CONNECTWISE_MANAGE}",
@@ -622,18 +919,23 @@
             "align": null,
             "displayMode": "auto"
           },
+          "displayName": "$__cell_0",
           "links": [],
           "mappings": [],
           "thresholds": {
             "mode": "absolute",
             "steps": [
               {
-                "color": "green",
+                "color": "red",
                 "value": null
               },
               {
-                "color": "red",
-                "value": 80
+                "color": "#EAB839",
+                "value": 1
+              },
+              {
+                "color": "green",
+                "value": 2
               }
             ]
           }
@@ -666,12 +968,12 @@
         ]
       },
       "gridPos": {
-        "h": 7,
-        "w": 5,
+        "h": 6,
+        "w": 12,
         "x": 0,
-        "y": 15
+        "y": 25
       },
-      "id": 6,
+      "id": 8,
       "options": {
         "displayMode": "gradient",
         "orientation": "vertical",
@@ -688,13 +990,13 @@
         {
           "alias": "",
           "format": "table",
-          "rawSql": "SELECT\n      [Closed_By], \n      COUNT(*) as 'Closed last 24 hrs'\n  FROM [$cw_db_name].[dbo].[v_api_collection_service_ticket]\n  WHERE [Closed_Flag] = 1\n  AND [Board_Name] LIKE 'Support'\n  AND [parentTicketId] IS NULL\n  AND [Date_Closed_UTC] > GETUTCDATE() -1\n  AND [Hours_Actual] > 0\n  GROUP BY [Closed_By]\n  ORDER BY 'Closed last 24 hrs' DESC",
+          "rawSql": "SELECT\n      [Closed_By], \n      COUNT(*) as 'Closed last 24 hrs'\n  FROM [$cw_db_name].[dbo].[v_api_collection_service_ticket]\n  WHERE [Closed_Flag] = 1\n  AND ([Board_Name] LIKE 'Support' OR [Board_Name] LIKE 'Alerts')\n  AND [parentTicketId] IS NULL\n  AND [Date_Closed_UTC] > GETUTCDATE() - 0.5\n  AND [Hours_Actual] > 0\n  AND [Closed_By] NOT LIKE 'Automate'\n  GROUP BY [Closed_By]\n  ORDER BY 'Closed last 24 hrs' DESC",
           "refId": "A"
         }
       ],
       "timeFrom": null,
       "timeShift": null,
-      "title": "Closed Tickets in the Last 24 hrs (Time > 0)",
+      "title": "Closed Tickets in the Last 12hrs",
       "transformations": [
         {
           "id": "organize",
@@ -755,6 +1057,148 @@
         }
       ],
       "type": "bargauge"
+    },
+    {
+      "datasource": "${DS_CONNECTWISE_MANAGE}",
+      "description": "",
+      "fieldConfig": {
+        "defaults": {
+          "custom": {
+            "align": null,
+            "displayMode": "auto"
+          },
+          "displayName": "$__cell_0",
+          "links": [],
+          "mappings": [],
+          "thresholds": {
+            "mode": "absolute",
+            "steps": [
+              {
+                "color": "blue",
+                "value": null
+              }
+            ]
+          },
+          "unit": "none"
+        },
+        "overrides": [
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Closed last 24 hrs"
+            },
+            "properties": [
+              {
+                "id": "custom.displayMode",
+                "value": "gradient-gauge"
+              }
+            ]
+          },
+          {
+            "matcher": {
+              "id": "byName",
+              "options": "Closed_By"
+            },
+            "properties": [
+              {
+                "id": "custom.width",
+                "value": 157
+              }
+            ]
+          }
+        ]
+      },
+      "gridPos": {
+        "h": 6,
+        "w": 12,
+        "x": 12,
+        "y": 25
+      },
+      "id": 9,
+      "options": {
+        "colorMode": "value",
+        "graphMode": "area",
+        "justifyMode": "center",
+        "orientation": "auto",
+        "reduceOptions": {
+          "calcs": [
+            "mean"
+          ],
+          "values": true
+        }
+      },
+      "pluginVersion": "7.0.0",
+      "targets": [
+        {
+          "alias": "",
+          "format": "table",
+          "rawSql": "SELECT\n      [Status_Name], \n      COUNT(*) as 'Status'\n  FROM [$cw_db_name].[dbo].[v_api_collection_service_ticket]\n  WHERE [parentTicketId] IS NULL\n  AND [Status_Name] NOT LIKE '>%'\n  AND [ResourceList] LIKE '%$cw_user%'\n  AND [Board_Name] NOT LIKE 'Documentation'\n  GROUP BY [Status_Name]\n  ORDER BY 'Status' DESC",
+          "refId": "A"
+        }
+      ],
+      "timeFrom": null,
+      "timeShift": null,
+      "title": "Ticket Statuses",
+      "transformations": [
+        {
+          "id": "organize",
+          "options": {
+            "excludeByName": {
+              "Closed_By": false,
+              "Closed_Flag": true,
+              "Company_ID": true,
+              "Date_Resolved_UTC": true,
+              "Date_Resplan_UTC": true,
+              "Date_Responded_UTC": true,
+              "Hours_Actual": true,
+              "IsInSla": true,
+              "Last_Update_UTC": true,
+              "Resolved_Minutes": true,
+              "Resplan_Minutes": true,
+              "Responded_Minutes": true,
+              "SLA_Name": true,
+              "SR_Service_RecID": false,
+              "SR_SubTypeItem_Name": true,
+              "SR_SubType_Name": true,
+              "SR_Type_Name": false,
+              "parentTicketId": true
+            },
+            "indexByName": {
+              "Board_Name": 3,
+              "Closed_Flag": 6,
+              "Company_ID": 5,
+              "Company_Name": 2,
+              "Date_Resolved_UTC": 12,
+              "Date_Resplan_UTC": 13,
+              "Date_Responded_UTC": 14,
+              "Hours_Actual": 11,
+              "IsInSla": 18,
+              "Last_Update_UTC": 19,
+              "Resolved_Minutes": 15,
+              "ResourceList": 20,
+              "Resplan_Minutes": 16,
+              "Responded_Minutes": 17,
+              "SLA_Name": 21,
+              "SR_Service_RecID": 0,
+              "SR_SubTypeItem_Name": 9,
+              "SR_SubType_Name": 8,
+              "SR_Type_Name": 7,
+              "SR_Urgency_Name": 10,
+              "Status_Name": 4,
+              "Summary": 1
+            },
+            "renameByName": {
+              "Board_Name": "Board",
+              "Company_ID": "",
+              "SR_Service_RecID": "Ticket #",
+              "SR_Type_Name": "",
+              "Status_Name": "Status",
+              "Summary": ""
+            }
+          }
+        }
+      ],
+      "type": "stat"
     }
   ],
   "refresh": false,
@@ -765,19 +1209,19 @@
     "list": [
       {
         "current": {
-          "value": "${VAR_CW_API_URL}",
-          "text": "${VAR_CW_API_URL}"
+          "value": "${VAR_CW_DB_NAME}",
+          "text": "${VAR_CW_DB_NAME}"
         },
         "hide": 2,
-        "label": "i.e. https://api-au.myconnectwise.net/v4_6_release",
-        "name": "cw_api_url",
+        "label": "Database Name i.e. cwwebapp_yourmsp",
+        "name": "cw_db_name",
         "options": [
           {
-            "value": "${VAR_CW_API_URL}",
-            "text": "${VAR_CW_API_URL}"
+            "value": "${VAR_CW_DB_NAME}",
+            "text": "${VAR_CW_DB_NAME}"
           }
         ],
-        "query": "${VAR_CW_API_URL}",
+        "query": "${VAR_CW_DB_NAME}",
         "skipUrlSync": false,
         "type": "constant"
       },
@@ -801,26 +1245,48 @@
       },
       {
         "current": {
-          "value": "${VAR_CW_DB_NAME}",
-          "text": "${VAR_CW_DB_NAME}"
+          "value": "${VAR_CW_API_URL}",
+          "text": "${VAR_CW_API_URL}"
         },
         "hide": 2,
-        "label": "Database Name i.e. cwwebapp_yourmsp",
-        "name": "cw_db_name",
+        "label": "i.e. https://api-au.myconnectwise.net/v4_6_release",
+        "name": "cw_api_url",
         "options": [
           {
-            "value": "${VAR_CW_DB_NAME}",
-            "text": "${VAR_CW_DB_NAME}"
+            "value": "${VAR_CW_API_URL}",
+            "text": "${VAR_CW_API_URL}"
           }
         ],
-        "query": "${VAR_CW_DB_NAME}",
+        "query": "${VAR_CW_API_URL}",
         "skipUrlSync": false,
         "type": "constant"
+      },
+      {
+        "allValue": "%",
+        "current": {},
+        "datasource": "${DS_CONNECTWISE_MANAGE}",
+        "definition": "SELECT [Member_ID] FROM [cwwebapp_yourmsp].[dbo].[v_ActiveMemberList]\nWHERE [Member_ID] NOT LIKE '%admin%'\nAND [Last_Name] IS NOT NULL",
+        "hide": 0,
+        "includeAll": false,
+        "label": "User:",
+        "multi": false,
+        "name": "cw_user",
+        "options": [],
+        "query": "SELECT [Member_ID] FROM [cwwebapp_yourmsp].[dbo].[v_ActiveMemberList]\nWHERE [Member_ID] NOT LIKE '%admin%'\nAND [Last_Name] IS NOT NULL",
+        "refresh": 1,
+        "regex": "",
+        "skipUrlSync": false,
+        "sort": 1,
+        "tagValuesQuery": "",
+        "tags": [],
+        "tagsQuery": "",
+        "type": "query",
+        "useTags": false
       }
     ]
   },
   "time": {
-    "from": "now-6h",
+    "from": "now-30d",
     "to": "now"
   },
   "timepicker": {
@@ -837,7 +1303,7 @@
     ]
   },
   "timezone": "",
-  "title": "Manage Test",
-  "uid": "89mGyg1Gz",
-  "version": 14
+  "title": "Manage - Personal Dashboard",
+  "uid": "89mGyg1Gy",
+  "version": 25
 }

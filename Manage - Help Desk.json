@@ -19,7 +19,7 @@
       "name": "VAR_CW_COMPANY_ID",
       "type": "constant",
       "label": "Your MSP's company ID as it is in ConnectWise Manage",
-      "value": "YourMSP",
+      "value": "yourmsp",
       "description": ""
     },
     {
@@ -33,7 +33,7 @@
       "name": "VAR_RANDOM_DELAY",
       "type": "constant",
       "label": "Random delay, between zero and $random_delay seconds",
-      "value": "10",
+      "value": "5",
       "description": ""
     }
   ],
@@ -86,7 +86,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": null,
-  "iteration": 1609370498819,
+  "iteration": 1609382011071,
   "links": [],
   "panels": [
     {
@@ -521,7 +521,7 @@
             {
               "targetBlank": true,
               "title": "Open Drilldown",
-              "url": "http://grafana.yourmsp.com.au/d/DKgrxXxMz/manage-drilldown-unassigned-support?orgId=1&refresh=15m"
+              "url": "http://grafana.yourmsp.com.au:3000/d/DKgrxXxMz/manage-drilldown-unassigned-support?orgId=1&refresh=15m"
             }
           ],
           "mappings": [],
@@ -1377,7 +1377,7 @@
         {
           "alias": "",
           "format": "time_series",
-          "rawSql": "DECLARE @RandomDelay int = ABS(CHECKSUM(NEWID()) % ($random_delay-1))\nWAITFOR DELAY @RandomDelay\nSELECT CAST([Date_Entered_UTC] as DATE) as time, ISNULL(count([SR_Service_RecID]), 0) as 'Opened Tickets'\n  FROM [$cw_db_name].[dbo].[v_api_collection_service_ticket]\n  WHERE ([Board_Name] LIKE 'Support' OR [Board_Name] LIKE 'Triage')\n  AND [parentTicketId] IS NULL\n  AND [Entered_By] NOT LIKE 'Automate'\n  AND [Date_Entered_UTC] > GETUTCDATE() - 14\n  GROUP BY CAST([Date_Entered_UTC] as DATE)\n  ORDER BY time",
+          "rawSql": "DECLARE @RandomDelay int = ABS(CHECKSUM(NEWID()) % ($random_delay-1))\nWAITFOR DELAY @RandomDelay\nSELECT $__timeGroup([Date_Entered_UTC], '1d',0) as time, ISNULL(count([SR_Service_RecID]), 0) as 'Opened Tickets'\n  FROM [$cw_db_name].[dbo].[v_api_collection_service_ticket]\n  WHERE ([Board_Name] LIKE 'Support' OR [Board_Name] LIKE 'Triage')\n  AND [parentTicketId] IS NULL\n  AND [Entered_By] NOT LIKE 'Automate'\n  AND [Date_Entered_UTC] > GETUTCDATE() - 14\n  GROUP BY $__timeGroup([Date_Entered_UTC], '1d',0)\n  ORDER BY $__timeGroup([Date_Entered_UTC], '1d',0)",
           "refId": "A"
         },
         {
@@ -1792,5 +1792,5 @@
   "timezone": "",
   "title": "Manage - Help Desk",
   "uid": "89mGyg1Gz",
-  "version": 55
+  "version": 57
 }
