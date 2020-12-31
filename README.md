@@ -11,3 +11,4 @@ A collection of Grafana dashboards and their SQL queries we have used to create 
       * Priority 4 - Low 
       * Priority 5 - No SLA \
   As it bases the formatting off of the constant position of the number - you may need to adpat this SQL query for your own urgency names.
+  3. Board names used are "Triage" and "Support", these will need to be changed manually in the queries if this does not match the names of boards you use.
