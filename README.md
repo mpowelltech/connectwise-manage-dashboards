@@ -1,5 +1,6 @@
 # connectwise-manage-dashboards
 A collection of Grafana dashboards and their SQL queries we have used to create a live operations dashboard for our ConnectWise Manage instance
+![image](https://user-images.githubusercontent.com/36752644/127422514-2a93354a-1f28-434c-9738-bb0c91bc5ccf.png)
 
 # Requirements
 1. Various variables are used to personalise it to your MSP, see the first few lines of the JSONs for info
